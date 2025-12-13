@@ -26,10 +26,12 @@ userRoute.route("/login").post(async (req, res) => {
     //console.log("Logged in user :",user);
     const token = createToken(user);
     // console.log(token);
+    const isProduction = process.env.NODE_ENV === 'production';
+    
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
       maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
     });
 
