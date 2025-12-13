@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #6366f1; /* Indigo-500 equivalent */
+  --primary-hover: #4f46e5;
+  --text-dark: #111827;
+  --text-medium: #374151;
+  --text-light: #6b7280;
+  --bg-light: #f3f4f6;
+  --card-bg: #ffffff;
+  --border-color: #e5e7eb;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-light);
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #eef2f6; /* Light gray-blue background */
+}
+
+.login-card {
+  background-color: var(--card-bg);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 3rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.login-header h2 {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.login-header p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.input-group-custom {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.825rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-medium);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.025em;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-light);
+  font-size: 1.2rem;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 1rem;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.2s;
+}
+
+.password-toggle-icon:hover {
+  color: var(--text-medium);
+}
+
+.form-control-custom {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 3rem; /* Left padding for icon */
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  color: var(--text-dark);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control-custom:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-medium);
+  cursor: pointer;
+}
+
+.checkbox-custom {
+  width: 1.1em;
+  height: 1.1em;
+  accent-color: var(--primary-color);
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.forgot-password {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.forgot-password:hover {
+  color: var(--primary-hover);
+}
+
+.btn-primary-custom {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s, transform 0.1s;
+  background: linear-gradient(to right, #8b5cf6, #3b82f6); /* Purple to Blue gradient */
+}
+
+.btn-primary-custom:hover {
+  filter: brightness(110%);
+}
+
+.divider-container {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 2rem 0;
+  color: #9ca3af; /* Gray-400 */
+}
+
+.divider-line {
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.divider-text {
+  padding: 0 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.social-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-social {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none; /* For potential anchor usage */
+}
+
+.btn-social:hover {
+  background-color: #f9fafb;
+}
+
+.bottom-text {
+  text-align: center;
+  color: var(--text-medium);
+  font-size: 0.95rem;
+}
+
+.link-primary {
+  color: var(--primary-color); /* Fallback or specific purple */
+  color: #8b5cf6; /* More distinct purple to match gradient start */
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.link-primary:hover {
+  color: var(--primary-hover);
+}
