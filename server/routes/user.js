@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const userRoute = Router();
-const userDb = require("../models/User");
+const userDb = require("../models/user");
 const { createToken, validateToken } = require("../services/authentication");
 userRoute.route("/signup").post(async (req, res) => {
   const { username, email, password } = req.body;
