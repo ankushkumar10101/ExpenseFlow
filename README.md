@@ -1,4 +1,4 @@
-# ExpenseFlow : An Expense Tracker App
+# ExpenseFlow: Smart Expense Tracker with AI Financial Assistance
 
 A full-stack MERN (MongoDB, Express, React, Node.js) application for tracking personal finances.
 
@@ -6,6 +6,7 @@ A full-stack MERN (MongoDB, Express, React, Node.js) application for tracking pe
 
 -   **Dashboard**: Visual overview of your spending with charts and statistics.
 -   **Transaction Tracking**: Add, edit, and delete income and expense transactions.
+-   **Reports**: Detailed financial analysis with filtered views, interactive charts (Bar, Pie, Line), and downloadable PDF reports.
 -   **AI Financial Assistant**: Integrated AI chat (using Groq SDK) to answer questions about your finances and provide budget advice.
     -   *Message Limit*: Free tier includes 10 AI messages per user.
 -   **User Authentication**: Secure signup and login with persistent sessions (2 days).
