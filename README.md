@@ -1,4 +1,4 @@
-# Expense Tracker App
+# ExpenseFlow : An Expense Tracker App
 
 A full-stack MERN (MongoDB, Express, React, Node.js) application for tracking personal finances.
 
