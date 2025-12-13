@@ -11,7 +11,7 @@
     const PORT=process.env.PORT || 8000
 
     app.use(cors({
-      origin:'http://localhost:5173',
+      origin:'https://expenseflow-bvl5.onrender.com',
       credentials:true
     }))
     app.use(express.urlencoded({extended:false}))
