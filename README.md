@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # ExxpenseFlow: An Expense Tracker App
+=======
+# ExpenseFlow: Smart Expense Tracker with AI Financial Assistance
+>>>>>>> 33032302497239c08604138e34bf5f5d1a95075c
 
 A full-stack MERN (MongoDB, Express, React, Node.js) application for tracking personal finances.
 
