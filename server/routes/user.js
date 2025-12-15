@@ -49,15 +49,10 @@ userRoute.route("/login").post(async (req, res) => {
 });
 
 userRoute.route("/verify").get((req, res) => {
-  const token = req.cookies?.token;
-  if (!token) {
-    return res.json({ success: false, message: "No token provided" });
-  }
-  try {
-    const payload = validateToken(token);
-    return res.json({ success: true, user: payload });
-  } catch (error) {
-    return res.json({ success: false, message: "Invalid token" });
+  if (req.user) {
+    return res.json({ success: true, user: req.user });
+  } else {
+    return res.json({ success: false, message: "Not authenticated" });
   }
 });
 module.exports = userRoute;
