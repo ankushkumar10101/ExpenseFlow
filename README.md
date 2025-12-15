@@ -1,4 +1,4 @@
-# ExpenseFlow: Smart Expense Tracker with AI Financial Assistance
+# ExpenseFlow: AI-Powered Financial Tracker 
 
 A full-stack MERN (MongoDB, Express, React, Node.js) application for tracking personal finances.
 
