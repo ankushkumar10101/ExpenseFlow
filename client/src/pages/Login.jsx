@@ -21,6 +21,7 @@ function Login() {
       const res = await api.post("auth/login", { email, password },{ withCredentials: true });
       if (res.data.success) {
         toast.success("Logged-in Successfully");
+        localStorage.setItem("token", res.data.token);
         navigate("/dashboard");
       }
       else{

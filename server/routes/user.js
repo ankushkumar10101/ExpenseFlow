@@ -38,6 +38,7 @@ userRoute.route("/login").post(async (req, res) => {
     return res.json({
       success: true,
       message: "Logged In Succesfully",
+      token: token
     });
   } else {
     return res.json({
