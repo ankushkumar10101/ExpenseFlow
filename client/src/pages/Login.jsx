@@ -11,11 +11,13 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await api.post("auth/login", { email, password },{ withCredentials: true });
@@ -29,6 +31,8 @@ function Login() {
       }
     } catch (error) {
       toast.error(`Error: ${error} , Message: Login Failed`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,8 +83,8 @@ function Login() {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary-custom">
-            Log in 
+          <button type="submit" className="btn-primary-custom" disabled={loading}>
+            {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
         <p className="bottom-text mt-4">
