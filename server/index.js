@@ -19,6 +19,9 @@
     app.use(cookieParser())
     app.use(checkForAuthentication('token'))
 
+    app.get('/ping', (req, res) => {
+          res.status(200).send('pong');
+        });
     app.use("/api/auth", userRoute);
     const aiRoute = require('./routes/ai');
     app.use('/api/dashboard',dashboardRoute)
