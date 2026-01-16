@@ -18,7 +18,6 @@ export default function Reports() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState('All Months');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,33 +36,16 @@ export default function Reports() {
     fetchData();
   }, []);
 
-  // --- Filter Logic ---
-  const availableMonths = ['All Months', ...new Set(transactions.map(t => {
-    const date = new Date(t.date);
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-  }))].sort((a, b) => {
-    if (a === 'All Months') return -1;
-    if (b === 'All Months') return 1;
-    return new Date(a) - new Date(b);
-  });
-
-  const filteredTransactions = selectedMonth === 'All Months' 
-    ? transactions 
-    : transactions.filter(t => {
-        const date = new Date(t.date);
-        return date.toLocaleString('default', { month: 'long', year: 'numeric' }) === selectedMonth;
-      });
-
   // --- Data Processing ---
 
-  // 1. Totals (Based on Filtered Data)
-  const totalIncome = filteredTransactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalExpense = filteredTransactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+  // 1. Totals (Based on ALL Data)
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
+  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
   const netSavings = totalIncome - totalExpense;
 
-  // 2. Category Data (Based on Filtered Data - Pie Chart)
+  // 2. Category Data (Based on ALL Data - Pie Chart)
   const categoryData = {};
-  filteredTransactions.filter(t => t.type === 'expense').forEach(t => {
+  transactions.filter(t => t.type === 'expense').forEach(t => {
     if (!categoryData[t.category]) categoryData[t.category] = 0;
     categoryData[t.category] += t.amount;
   });
@@ -149,11 +131,6 @@ export default function Reports() {
       // Add Image (Visual Report)
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
 
-      // Add Date (Overlay or below image)
-      pdf.setFontSize(10);
-      pdf.setTextColor(100);
-      // pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, imgHeight + 10); // Option A: Below image
-
       // Add Transaction Table (New Page or below if space)
       let startY = imgHeight + 10;
       if (startY > pdfHeight - 20) {
@@ -166,13 +143,13 @@ export default function Reports() {
       pdf.text("Transaction Details", 14, startY);
       pdf.setFontSize(10);
       pdf.setTextColor(100);
-      pdf.text(`Period: ${selectedMonth}`, 14, startY + 6);
+      pdf.text(`Period: All Time`, 14, startY + 6);
       pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, startY + 12);
 
       const tableColumn = ["Date", "Title", "Category", "Type", "Amount"];
       const tableRows = [];
 
-      filteredTransactions.slice().reverse().forEach(t => {
+      transactions.slice().reverse().forEach(t => {
         const transactionData = [
           new Date(t.date).toLocaleDateString(),
           t.title,
@@ -191,7 +168,7 @@ export default function Reports() {
         headStyles: { fillColor: [108, 93, 211] },
       });
 
-      pdf.save(`financial_report_${selectedMonth.replace(' ', '_')}.pdf`);
+      pdf.save(`financial_report_all_time.pdf`);
     } catch (error) {
       console.error("Error generating PDF:", error);
     }
@@ -216,28 +193,15 @@ export default function Reports() {
              </div>
              
              <div className="d-flex align-items-center gap-3 w-100 w-md-auto">
-               <Dropdown onSelect={(e) => setSelectedMonth(e)} className="w-50">
-                 <Dropdown.Toggle variant="light" className="w-100 rounded-pill border-0 bg-white px-3 text-muted shadow-sm" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                   <span className="text-truncate">{selectedMonth}</span>
-                 </Dropdown.Toggle>
-                 <Dropdown.Menu className="border-0 shadow-sm rounded-4 mt-2 w-100">
-                   {availableMonths.map(month => (
-                     <Dropdown.Item key={month} eventKey={month} active={selectedMonth === month}>
-                       {month}
-                     </Dropdown.Item>
-                   ))}
-                 </Dropdown.Menu>
-               </Dropdown>
-
                <Button 
-                 className="btn d-flex align-items-center justify-content-center gap-2 px-3 py-2 w-50"
+                 className="btn d-flex align-items-center justify-content-center gap-2 px-4 py-2"
                  onClick={downloadPDF}
-                 style={{ backgroundColor: '#958fc4', border: '#6c757d' ,borderRadius: '10px'}}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#221a54ff'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#958fc4'}
+                 style={{ backgroundColor: '#958fc4', border: 'none', borderRadius: '10px', minWidth: '160px' }}
+                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#221a54ff'}
+                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#958fc4'}
                >
                  <MdDownload size={20} />
-                 <span className="text-truncate">Download PDF</span>
+                 <span>Download PDF</span>
                </Button>
              </div>
           </div>
@@ -301,7 +265,7 @@ export default function Reports() {
               </Col>
               <Col lg={5}>
                 <Card className="card-custom p-4 h-100">
-                  <h5 className="fw-bold mb-4">Spending by Category ({selectedMonth})</h5>
+                  <h5 className="fw-bold mb-4">Spending by Category (All Time)</h5>
                   <div style={{ height: '300px', display: 'flex', justifyContent: 'center' }}>
                     <Pie data={pieChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }} />
                   </div>
@@ -327,3 +291,4 @@ export default function Reports() {
     </div>
   );
 }
+
