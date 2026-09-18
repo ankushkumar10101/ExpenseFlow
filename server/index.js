@@ -15,23 +15,9 @@ connectDb();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://expenseflow-bvl5.onrender.com",
-];
-if (process.env.CLIENT_URL) {
-  allowedOrigins.push(process.env.CLIENT_URL);
-}
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, Postman, etc.) or if origin is allowed / dynamic
-      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
-        return callback(null, true);
-      }
-      return callback(null, true); // Allow configured frontend domain
-    },
+    origin: ["http://localhost:5173", "https://expenseflow-bvl5.onrender.com"],
     credentials: true,
   })
 );
@@ -39,21 +25,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(authenticateUser("token"));
-
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "ExpenseFlow Backend API is running!",
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      ping: "/ping",
-      auth: "/api/auth",
-      transactions: "/api/transactions",
-      userStats: "/api/userStats",
-      ai: "/api/ai",
-    },
-  });
-});
 
 app.get("/ping", (req, res) => {
   res.status(200).send("pong");
