@@ -51,6 +51,6 @@ const transactionSchema = new Schema(
   { timestamps: true }
 );
 
-// Pinning collection name "expenses" ensures backwards compatibility with existing database records
-const Transaction = model("Transaction", transactionSchema, "expenses");
+// Collection name "transactions"
+const Transaction = model("Transaction", transactionSchema, "transactions");
 module.exports = Transaction;
