@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Card, Dropdown } from 'react-bootstrap';
-import { MdDownload, MdArrowUpward, MdArrowDownward, MdMenu } from 'react-icons/md';
+import { MdArrowUpward, MdArrowDownward, MdMenu } from 'react-icons/md';
 import { FaWallet } from 'react-icons/fa';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import html2canvas from 'html2canvas';
 import api from '../api/axios';
 import Sidebar from '../components/Sidebar';
 
@@ -131,67 +128,6 @@ export default function Reports() {
     ],
   };
 
-  // --- PDF Download ---
-  const downloadPDF = async () => {
-    const input = document.getElementById('report-content');
-    if (!input) return;
-
-    try {
-      // Capture the visual report
-      const canvas = await html2canvas(input, { scale: 2 });
-      const imgData = canvas.toDataURL('image/png');
-
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      // Add Image (Visual Report)
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-
-      // Add Transaction Table (New Page or below if space)
-      let startY = imgHeight + 10;
-      if (startY > pdfHeight - 20) {
-        pdf.addPage();
-        startY = 20;
-      }
-
-      pdf.setFontSize(14);
-      pdf.setTextColor(108, 93, 211);
-      pdf.text("Transaction Details", 14, startY);
-      pdf.setFontSize(10);
-      pdf.setTextColor(100);
-      pdf.text(`Period: All Time`, 14, startY + 6);
-      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, startY + 12);
-
-      const tableColumn = ["Date", "Title", "Category", "Type", "Amount"];
-      const tableRows = [];
-
-      transactions.slice().reverse().forEach(txn => {
-        const transactionData = [
-          new Date(txn.date).toLocaleDateString(),
-          txn.title,
-          txn.category,
-          txn.type,
-          `$${txn.amount}`
-        ];
-        tableRows.push(transactionData);
-      });
-
-      autoTable(pdf, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: startY + 15,
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [108, 93, 211] },
-      });
-
-      pdf.save(`financial_report_all_time.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
-  };
 
   return (
     <div>
@@ -210,23 +146,9 @@ export default function Reports() {
               </Button>
               <h2 className="fw-bold mb-0 text-purple">Reports</h2>
             </div>
-
-            <div className="d-flex align-items-center gap-3 w-100 w-md-auto">
-              <Button
-                className="btn d-flex align-items-center justify-content-center gap-2 px-4 py-2"
-                onClick={downloadPDF}
-                style={{ backgroundColor: '#958fc4', border: 'none', borderRadius: '10px', minWidth: '160px' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#221a54ff'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#958fc4'}
-              >
-                <MdDownload size={20} />
-                <span>Download PDF</span>
-              </Button>
-            </div>
           </div>
 
-          {/* Report Content to Capture */}
-          <div id="report-content" className="bg-transparent">
+          <div className="bg-transparent">
             {/* Summary Cards */}
             <Row className="g-4 mb-4">
               <Col md={4}>
