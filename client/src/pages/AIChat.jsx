@@ -10,7 +10,7 @@ export default function AIChat() {
   const [chatLoading, setChatLoading] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
-  
+
   // Chat State
   const [messages, setMessages] = useState([
     { sender: 'ai', text: "Hi! I'm your financial assistant. Ask me anything about your spending, or request a budget plan!" }
@@ -27,12 +27,14 @@ export default function AIChat() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await api.get("/dashboard", { withCredentials: true });
+        const userRes = await api.get("/userStats", { withCredentials: true });
         if (userRes.data.user) {
           setCurrentUserId(userRes.data.user._id);
-          const expenseRes = await api.get(`/dashboard/expense/${userRes.data.user._id}`, { withCredentials: true });
-          setTransactions(expenseRes.data.allExpense);
         }
+        const txRes = await api.get("/transactions", { withCredentials: true });
+        const fetchedTransactions =
+          txRes.data.transactions || txRes.data.allExpense || [];
+        setTransactions(fetchedTransactions);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -99,109 +101,109 @@ export default function AIChat() {
   return (
     <div className="d-flex">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      
+
       <div className="flex-grow-1 main-content main-content-shifted bg-light" style={{ height: '100vh', overflow: 'hidden' }}>
         <Container fluid className="p-2 p-md-4 h-100 d-flex flex-column">
           {/* Header */}
           <div className="d-flex align-items-center justify-content-between mb-3 pt-3 flex-shrink-0">
-             <div className="d-flex align-items-center gap-3">
-                <Button 
-                  variant="link" 
-                  className="d-md-none p-0 text-dark" 
-                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                >
-                  <MdMenu size={28} />
-                </Button>
-                <div>
-                   <h2 className="fw-bold mb-1 text-purple">AI Financial Assistant</h2>
-                   <p className="text-muted mb-0">Ask me anything about your finances</p>
-                </div>
-             </div>
-             <Button variant="outline-danger" size="sm" onClick={clearChat} title="Clear Chat History">
-                <MdDeleteOutline size={20} /> <span className="d-none d-md-inline">Clear Chat</span>
-             </Button>
+            <div className="d-flex align-items-center gap-3">
+              <Button
+                variant="link"
+                className="d-md-none p-0 text-dark"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                <MdMenu size={28} />
+              </Button>
+              <div>
+                <h2 className="fw-bold mb-1 text-purple">AI Financial Assistant</h2>
+                <p className="text-muted mb-0">Ask me anything about your finances</p>
+              </div>
+            </div>
+            <Button variant="outline-danger" size="sm" onClick={clearChat} title="Clear Chat History">
+              <MdDeleteOutline size={20} /> <span className="d-none d-md-inline">Clear Chat</span>
+            </Button>
           </div>
 
           {/* Chat Interface */}
           <Card className="card-custom border-0 shadow-sm flex-grow-1 d-flex flex-column overflow-hidden">
             <Card.Body className="flex-grow-1 overflow-auto p-2 p-md-4">
-                <div className="d-flex flex-column gap-3">
-                    {messages.map((msg, idx) => (
-                        <div key={idx} className={`d-flex ${msg.sender === 'user' ? 'justify-content-end' : 'justify-content-start'}`}>
-                            <div className={`d-flex flex-column ${msg.sender === 'user' ? 'align-items-end' : 'align-items-start'}`} style={{ maxWidth: '85%' }}>
-                                <div 
-                                    className={`p-3 rounded-4 ${msg.sender === 'user' ? 'bg-purple text-white' : 'bg-light text-dark'}`}
-                                    style={{ 
-                                        borderBottomRightRadius: msg.sender === 'user' ? '4px' : '20px', 
-                                        borderBottomLeftRadius: msg.sender === 'ai' ? '4px' : '20px',
-                                        boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
-                                        wordBreak: 'break-word', 
-                                        overflowWrap: 'break-word',
-                                        whiteSpace: 'pre-wrap'
-                                    }}
-                                >
-                                    {msg.sender === 'ai' ? (
-                                        <div className="markdown-content">
-                                            <ReactMarkdown>{msg.text}</ReactMarkdown>
-                                        </div>
-                                    ) : (
-                                        msg.text
-                                    )}
-                                </div>
-                                <small className="text-muted mt-1 mx-2" style={{ fontSize: '0.75rem' }}>
-                                    {msg.sender === 'ai' ? 'AI Assistant' : 'You'}
-                                </small>
-                            </div>
-                        </div>
-                    ))}
-                    {chatLoading && (
-                        <div className="d-flex justify-content-start">
-                            <div className="bg-light p-3 rounded-4">
-                                <Spinner size="sm" animation="dots" variant="secondary" /> Typing...
-                            </div>
-                        </div>
-                    )}
-                    <div ref={chatEndRef} />
-                </div>
+              <div className="d-flex flex-column gap-3">
+                {messages.map((msg, idx) => (
+                  <div key={idx} className={`d-flex ${msg.sender === 'user' ? 'justify-content-end' : 'justify-content-start'}`}>
+                    <div className={`d-flex flex-column ${msg.sender === 'user' ? 'align-items-end' : 'align-items-start'}`} style={{ maxWidth: '85%' }}>
+                      <div
+                        className={`p-3 rounded-4 ${msg.sender === 'user' ? 'bg-purple text-white' : 'bg-light text-dark'}`}
+                        style={{
+                          borderBottomRightRadius: msg.sender === 'user' ? '4px' : '20px',
+                          borderBottomLeftRadius: msg.sender === 'ai' ? '4px' : '20px',
+                          boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                          whiteSpace: 'pre-wrap'
+                        }}
+                      >
+                        {msg.sender === 'ai' ? (
+                          <div className="markdown-content">
+                            <ReactMarkdown>{msg.text}</ReactMarkdown>
+                          </div>
+                        ) : (
+                          msg.text
+                        )}
+                      </div>
+                      <small className="text-muted mt-1 mx-2" style={{ fontSize: '0.75rem' }}>
+                        {msg.sender === 'ai' ? 'AI Assistant' : 'You'}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+                {chatLoading && (
+                  <div className="d-flex justify-content-start">
+                    <div className="bg-light p-3 rounded-4">
+                      <Spinner size="sm" animation="dots" variant="secondary" /> Typing...
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
             </Card.Body>
 
             <Card.Footer className="bg-white border-top-0 p-4 pt-2">
-                {/* Suggested Questions */}
-                <div className="d-flex gap-2 mb-3 flex-wrap"> 
-                    {suggestedQuestions.map((q, idx) => (
-                        <Badge 
-                            key={idx} 
-                            bg="light" 
-                            text="dark" 
-                            className="p-2 px-3 border cursor-pointer hover-shadow" 
-                            style={{ cursor: 'pointer', fontWeight: '500' }}
-                            onClick={() => handleSendMessage(null, q)}
-                        >
-                            <MdLightbulbOutline className="me-1 text-warning" /> {q}
-                        </Badge>
-                    ))}
-                </div>
+              {/* Suggested Questions */}
+              <div className="d-flex gap-2 mb-3 flex-wrap">
+                {suggestedQuestions.map((q, idx) => (
+                  <Badge
+                    key={idx}
+                    bg="light"
+                    text="dark"
+                    className="p-2 px-3 border cursor-pointer hover-shadow"
+                    style={{ cursor: 'pointer', fontWeight: '500' }}
+                    onClick={() => handleSendMessage(null, q)}
+                  >
+                    <MdLightbulbOutline className="me-1 text-warning" /> {q}
+                  </Badge>
+                ))}
+              </div>
 
-                <Form onSubmit={(e) => handleSendMessage(e)}>
-                    <InputGroup className="shadow-sm rounded-pill overflow-hidden">
-                        <Form.Control
-                            placeholder="Ask about your spending..."
-                            value={inputMessage}
-                            onChange={(e) => setInputMessage(e.target.value)}
-                            className="border-0 py-3 px-4 bg-light"
-                            disabled={chatLoading}
-                            style={{ fontSize: '1rem' }}
-                        />
-                        <Button 
-                            variant="primary" 
-                            type="submit" 
-                            className="bg-purple border-0 px-4"
-                            disabled={!inputMessage.trim() || chatLoading}
-                        >
-                            <MdSend size={24} />
-                        </Button>
-                    </InputGroup>
-                </Form>
+              <Form onSubmit={(e) => handleSendMessage(e)}>
+                <InputGroup className="shadow-sm rounded-pill overflow-hidden">
+                  <Form.Control
+                    placeholder="Ask about your spending..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    className="border-0 py-3 px-4 bg-light"
+                    disabled={chatLoading}
+                    style={{ fontSize: '1rem' }}
+                  />
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    className="bg-purple border-0 px-4"
+                    disabled={!inputMessage.trim() || chatLoading}
+                  >
+                    <MdSend size={24} />
+                  </Button>
+                </InputGroup>
+              </Form>
             </Card.Footer>
           </Card>
         </Container>

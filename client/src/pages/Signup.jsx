@@ -18,7 +18,7 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const res = await api.post("auth/signup", { username,email, password });
+      const res = await api.post("/auth/register", { username, email, password });
       if (res) {
         toast.success("Registered Successfully");
         console.log(res)
@@ -85,7 +85,7 @@ function Signup() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-               <div 
+              <div
                 className="password-toggle-icon"
                 onClick={() => setShowPassword(!showPassword)}
               >
@@ -95,7 +95,7 @@ function Signup() {
           </div>
 
 
-          <button type="submit" className="btn-primary-custom">
+          <button type="submit" className="btn-login-primary">
             Sign up
           </button>
         </form>

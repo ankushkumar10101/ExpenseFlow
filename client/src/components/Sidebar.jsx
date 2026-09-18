@@ -1,10 +1,24 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { MdDashboard, MdSwapHoriz, MdPieChart, MdLogout, MdClose, MdSmartToy } from 'react-icons/md';
 import { GiTakeMyMoney } from 'react-icons/gi';
 import { Container } from 'react-bootstrap';
+import api from '../api/axios';
 
 const Sidebar = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/auth/logout', {}, { withCredentials: true });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      localStorage.removeItem('token');
+      navigate('/');
+    }
+  };
   return (
     <>
       <div 
@@ -67,9 +81,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         </ul>
         <hr />
         <div className="dropdown">
-          <a href="#" className="d-flex align-items-center link-dark text-decoration-none sidebar-link" onClick={() => {
-              window.location.href = '/';
-          }}>
+          <a href="#" className="d-flex align-items-center link-dark text-decoration-none sidebar-link" onClick={handleLogout}>
             <MdLogout size={20} />
             <strong>Log out</strong>
           </a>

@@ -1,36 +1,37 @@
 import { Card, Button } from "react-bootstrap";
 
-export default function ExpenseCard({data}) {
+export default function ExpenseCard({ transaction, data = transaction }) {
+  const item = transaction || data || {};
+
   return (
-    <Card 
-      className="shadow-sm border-0 mb-3 m-2" 
-      style={{ minWidth:'250px', backgroundColor:'#e4e4e4a8'}}   // forces smaller width
+    <Card
+      className="shadow-sm border-0 mb-3 m-2"
+      style={{ minWidth: "250px", backgroundColor: "#e4e4e4a8" }}
     >
       <Card.Body>
-        
         {/* TITLE */}
-        <h5 className="fw-bold text-primary mb-3">{data.title}</h5>
+        <h5 className="fw-bold text-primary mb-3">{item.title}</h5>
 
         {/* DETAILS */}
         <div className="mb-1">
           <small className="text-muted">Amount:</small>
-          <span className="ms-2 fw-semibold">₹{data.amount}</span>
+          <span className="ms-2 fw-semibold">₹{item.amount}</span>
         </div>
 
         <div className="mb-1">
           <small className="text-muted">Category:</small>
-          <span className="ms-2">{data.category}</span>
+          <span className="ms-2">{item.category}</span>
         </div>
 
         <div className="mb-1">
           <small className="text-muted">Notes:</small>
-          <span className="ms-2">{data.notes}</span>
+          <span className="ms-2">{item.notes}</span>
         </div>
 
         <div className="mb-1">
           <small className="text-muted">Date:</small>
           <span className="ms-2">
-            {new Date(data.date).toLocaleDateString()}
+            {item.date ? new Date(item.date).toLocaleDateString() : "-"}
           </span>
         </div>
 
@@ -44,7 +45,6 @@ export default function ExpenseCard({data}) {
             Delete
           </Button>
         </div>
-
       </Card.Body>
     </Card>
   );

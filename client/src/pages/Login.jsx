@@ -20,7 +20,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await api.post("auth/login", { email, password },{ withCredentials: true });
+      const res = await api.post("/auth/login", { email, password },{ withCredentials: true });
       if (res.data.success) {
         toast.success("Logged-in Successfully");
         localStorage.setItem("token", res.data.token);
@@ -83,7 +83,7 @@ function Login() {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary-custom" disabled={loading}>
+          <button type="submit" className="btn-login-primary" disabled={loading}>
             {loading ? "Logging in..." : "Log in"}
           </button>
         </form>

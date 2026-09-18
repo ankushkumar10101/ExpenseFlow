@@ -1,17 +1,17 @@
-const { validateToken } = require("../services/authentication");
+const { validateToken } = require("../services/tokenService");
 
-function checkForAuthentication(cookieName) {
-  return (req,res,next) => {
+function authenticateUser(cookieName = "token") {
+  return (req, res, next) => {
     const cookie = req.cookies[cookieName];
     if (cookie) {
       try {
         const payload = validateToken(cookie);
         req.user = payload;
       } catch (error) {
-        // Token is invalid/expired - just ignore and don't set user
+        // Token is invalid/expired - proceed without authenticated user
       }
     } else {
-      // Check for header
+      // Check for Authorization Bearer header
       const authHeader = req.headers["authorization"];
       if (authHeader && authHeader.startsWith("Bearer ")) {
         const token = authHeader.split(" ")[1];
@@ -19,11 +19,16 @@ function checkForAuthentication(cookieName) {
           const payload = validateToken(token);
           req.user = payload;
         } catch (error) {
-           // Invalid header token
+          // Invalid header token
         }
       }
     }
-     next();
+    next();
   };
 }
-module.exports = { checkForAuthentication };
+
+module.exports = {
+  authenticateUser,
+  // Backward-compatibility alias
+  checkForAuthentication: authenticateUser,
+};

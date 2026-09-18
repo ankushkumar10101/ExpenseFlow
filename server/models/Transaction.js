@@ -1,10 +1,10 @@
-  const { Schema, model } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const expenseSchema = new Schema(
+const transactionSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     title: {
@@ -51,5 +51,6 @@ const expenseSchema = new Schema(
   { timestamps: true }
 );
 
-const expense = model("expense", expenseSchema);
-module.exports = expense;
+// Pinning collection name "expenses" ensures backwards compatibility with existing database records
+const Transaction = model("Transaction", transactionSchema, "expenses");
+module.exports = Transaction;

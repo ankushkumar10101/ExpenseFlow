@@ -27,7 +27,7 @@ const userSchema = new Schema(
 userSchema.pre("save", function (next) {
   const user = this;
 
-  if (!this.isModified) return next();
+  if (!this.isModified("password")) return next();
 
   const salt = randomBytes(16).toString();
   const hashedPassword = createHmac("sha256", salt)
@@ -49,9 +49,10 @@ userSchema.static("matchPassword", async function (email, password) {
     .update(password)
     .digest("hex");
 
-    if(userProvidedHash!=hashedPassword) return false
-    return user
+  if (userProvidedHash !== hashedPassword) return false;
+  return user;
 });
 
-const User = mongoose.models.user || model("user", userSchema);
+// Explicit collection name "users" ensures backwards compatibility
+const User = mongoose.models.User || model("User", userSchema, "users");
 module.exports = User;

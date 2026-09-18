@@ -17,16 +17,25 @@ ChartJS.register(
 export default function Reports() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await api.get("/dashboard", { withCredentials: true });
-        if (userRes.data.user) {
-          const expenseRes = await api.get(`/dashboard/expense/${userRes.data.user._id}`, { withCredentials: true });
-          setTransactions(expenseRes.data.allExpense);
+        try {
+          const statsRes = await api.get("/userStats", { withCredentials: true });
+          if (statsRes.data?.stats) {
+            setStats(statsRes.data.stats);
+          }
+        } catch (err) {
+          // Non-critical, fallback to transactions
         }
+
+        const txRes = await api.get("/transactions", { withCredentials: true });
+        const fetchedTransactions =
+          txRes.data.transactions || txRes.data.allExpense || [];
+        setTransactions(fetchedTransactions);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -38,29 +47,39 @@ export default function Reports() {
 
   // --- Data Processing ---
 
-  // 1. Totals (Based on ALL Data)
-  const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+  // 1. Totals (Use pre-aggregated stats directly if available, otherwise calculate from transactions)
+  const calcIncome = transactions.filter(txn => txn.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
+  const calcExpense = transactions.filter(txn => txn.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+
+  const totalIncome = stats?.totalIncome !== undefined ? stats.totalIncome : calcIncome;
+  const totalExpense = stats?.totalExpense !== undefined ? stats.totalExpense : calcExpense;
   const netSavings = totalIncome - totalExpense;
 
-  // 2. Category Data (Based on ALL Data - Pie Chart)
+  // 2. Category Data (Use pre-aggregated expenseCategoryTotals if available, otherwise calculate)
   const categoryData = {};
-  transactions.filter(t => t.type === 'expense').forEach(t => {
-    if (!categoryData[t.category]) categoryData[t.category] = 0;
-    categoryData[t.category] += t.amount;
-  });
+  const expenseCatList = stats?.expenseCategoryTotals;
+  if (expenseCatList && expenseCatList.length > 0) {
+    expenseCatList.forEach(item => {
+      categoryData[item._id] = item.totalSpent;
+    });
+  } else {
+    transactions.filter(txn => txn.type === 'expense').forEach(txn => {
+      if (!categoryData[txn.category]) categoryData[txn.category] = 0;
+      categoryData[txn.category] += txn.amount;
+    });
+  }
 
   // 3. Monthly Data (Always based on ALL transactions for Trends)
   const monthlyData = {};
-  transactions.forEach(t => {
-    const date = new Date(t.date);
+  transactions.forEach(txn => {
+    const date = new Date(txn.date);
     const monthYear = date.toLocaleString('default', { month: 'short', year: 'numeric' });
-    
+
     if (!monthlyData[monthYear]) {
       monthlyData[monthYear] = { income: 0, expense: 0 };
     }
-    if (t.type === 'income') monthlyData[monthYear].income += t.amount;
-    else monthlyData[monthYear].expense += t.amount;
+    if (txn.type === 'income') monthlyData[monthYear].income += txn.amount;
+    else monthlyData[monthYear].expense += txn.amount;
   });
 
   const sortedMonths = Object.keys(monthlyData).sort((a, b) => new Date(a) - new Date(b));
@@ -121,7 +140,7 @@ export default function Reports() {
       // Capture the visual report
       const canvas = await html2canvas(input, { scale: 2 });
       const imgData = canvas.toDataURL('image/png');
-      
+
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -149,13 +168,13 @@ export default function Reports() {
       const tableColumn = ["Date", "Title", "Category", "Type", "Amount"];
       const tableRows = [];
 
-      transactions.slice().reverse().forEach(t => {
+      transactions.slice().reverse().forEach(txn => {
         const transactionData = [
-          new Date(t.date).toLocaleDateString(),
-          t.title,
-          t.category,
-          t.type,
-          `$${t.amount}`
+          new Date(txn.date).toLocaleDateString(),
+          txn.title,
+          txn.category,
+          txn.type,
+          `$${txn.amount}`
         ];
         tableRows.push(transactionData);
       });
@@ -177,33 +196,33 @@ export default function Reports() {
   return (
     <div>
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      
+
       <div className="flex-grow-1 main-content main-content-shifted">
         <Container fluid className="p-4">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pt-3 gap-3">
-             <div className="d-flex align-items-center gap-3">
-               <Button 
-                 variant="link" 
-                 className="d-md-none p-0 text-dark" 
-                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-               >
-                 <MdMenu size={28} />
-               </Button>
-               <h2 className="fw-bold mb-0 text-purple">Reports</h2>
-             </div>
-             
-             <div className="d-flex align-items-center gap-3 w-100 w-md-auto">
-               <Button 
-                 className="btn d-flex align-items-center justify-content-center gap-2 px-4 py-2"
-                 onClick={downloadPDF}
-                 style={{ backgroundColor: '#958fc4', border: 'none', borderRadius: '10px', minWidth: '160px' }}
-                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#221a54ff'}
-                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#958fc4'}
-               >
-                 <MdDownload size={20} />
-                 <span>Download PDF</span>
-               </Button>
-             </div>
+            <div className="d-flex align-items-center gap-3">
+              <Button
+                variant="link"
+                className="d-md-none p-0 text-dark"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                <MdMenu size={28} />
+              </Button>
+              <h2 className="fw-bold mb-0 text-purple">Reports</h2>
+            </div>
+
+            <div className="d-flex align-items-center gap-3 w-100 w-md-auto">
+              <Button
+                className="btn d-flex align-items-center justify-content-center gap-2 px-4 py-2"
+                onClick={downloadPDF}
+                style={{ backgroundColor: '#958fc4', border: 'none', borderRadius: '10px', minWidth: '160px' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#221a54ff'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#958fc4'}
+              >
+                <MdDownload size={20} />
+                <span>Download PDF</span>
+              </Button>
+            </div>
           </div>
 
           {/* Report Content to Capture */}

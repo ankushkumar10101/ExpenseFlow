@@ -5,7 +5,7 @@ const userStatsSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
       unique: true,
     },
@@ -13,13 +13,17 @@ const userStatsSchema = new Schema(
       type: String,
       default: null,
     },
-    categoryTotals: {
+    expenseCategoryTotals: {
       type: Array,
       default: [],
     },
     incomeCategoryTotals: {
       type: Array,
       default: [],
+    },
+    totalExpense: {
+      type: Number,
+      default: 0,
     },
     totalIncome: {
       type: Number,
@@ -33,5 +37,6 @@ const userStatsSchema = new Schema(
   { timestamps: true }
 );
 
-const userStats = model("UserStats", userStatsSchema);
-module.exports = userStats;
+// Explicit collection name "userstats" ensures backwards compatibility
+const UserStats = mongoose.models.UserStats || model("UserStats", userStatsSchema, "userstats");
+module.exports = UserStats;

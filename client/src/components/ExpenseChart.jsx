@@ -10,20 +10,22 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-export default function ExpenseChart({ categoryTotals, incomeCategoryTotals = [] }) {
-  
+export default function ExpenseChart({
+  expenseCategoryTotals = [],
+  incomeCategoryTotals = [],
+}) {
   // Combine and normalize data
   const combinedData = [
-    ...incomeCategoryTotals.map(item => ({ 
-      label: item._id, 
-      value: item.totalAmount, 
-      color: '#28a745' // Green for Income
+    ...incomeCategoryTotals.map((item) => ({
+      label: item._id,
+      value: item.totalAmount,
+      color: "#28a745", // Green for Income
     })),
-    ...categoryTotals.map(item => ({ 
-      label: item._id, 
-      value: item.totalSpent, 
-      color: '#6c5dd3' // Purple for Expense
-    }))
+    ...expenseCategoryTotals.map((item) => ({
+      label: item._id,
+      value: item.totalSpent,
+      color: "#6c5dd3", // Purple for Expense
+    })),
   ];
 
   const labels = combinedData.map((item) => item.label);
@@ -42,11 +44,11 @@ export default function ExpenseChart({ categoryTotals, incomeCategoryTotals = []
             },
             tooltip: {
               callbacks: {
-                label: function(context) {
+                label: function (context) {
                   return `$${context.raw}`;
-                }
-              }
-            }
+                },
+              },
+            },
           },
           scales: {
             y: {
@@ -54,14 +56,14 @@ export default function ExpenseChart({ categoryTotals, incomeCategoryTotals = []
               grid: {
                 display: true,
                 drawBorder: false,
-              }
+              },
             },
             x: {
               grid: {
                 display: false,
-              }
-            }
-          }
+              },
+            },
+          },
         }}
         data={{
           labels,

@@ -16,7 +16,7 @@ A full-stack MERN (MongoDB, Express, React, Node.js) application for tracking pe
 
 -   **Client**: React, Vite, Bootstrap, Chart.js
 -   **Server**: Node.js, Express, Mongoose (MongoDB)
--   **AI**: Groq SDK (Llama 3 70b)
+-   **AI**: Groq SDK (`openai/gpt-oss-120b` with fallback to `llama-3.1-8b-instant`)
 
 ## Installation & Setup
 
@@ -47,6 +47,7 @@ Create a `.env` file in the `server` directory with the following variables:
 PORT=8000
 MONGO_URI=your_mongodb_connection_string
 GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-120b
 ```
 
 Start the server:

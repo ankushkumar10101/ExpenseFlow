@@ -138,7 +138,7 @@ body {
   color: var(--primary-hover);
 }
 
-.btn-primary-custom {
+.btn-login-primary {
   width: 100%;
   background-color: var(--primary-color);
   color: white;
@@ -156,7 +156,7 @@ body {
   background: linear-gradient(to right, #8b5cf6, #3b82f6); /* Purple to Blue gradient */
 }
 
-.btn-primary-custom:hover {
+.btn-login-primary:hover {
   filter: brightness(110%);
 }
 

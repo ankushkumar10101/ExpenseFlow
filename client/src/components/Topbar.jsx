@@ -22,7 +22,7 @@ const Topbar = ({ title = "Dashboard", onQuickAdd, onToggleSidebar, username }) 
       <div className="d-flex align-items-center gap-4">
         
         <Button 
-          className="btn-secondary  -custom d-flex align-items-center gap-2"
+          className="btn btn-secondary-custom d-flex align-items-center gap-2"
           style={{ backgroundColor: '#958fc4', border: '#6c757d' ,borderRadius: '10px'}}
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#221a54ff'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#958fc4'} 
