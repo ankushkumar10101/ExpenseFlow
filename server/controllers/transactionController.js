@@ -13,10 +13,7 @@ async function getTransactions(req, res) {
   }
 
   try {
-    const transactions = await Transaction.find({ user: req.user._id }).sort({
-      date: -1,
-      createdAt: -1,
-    });
+    const transactions = await Transaction.find({ user: req.user._id });
 
     return res.status(200).json({
       success: true,
